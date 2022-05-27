@@ -1,0 +1,44 @@
+action: GLOB, msg: packaging
+cwd: /home/jmshrtn/Dev/github.com/team-alembic/python-buildkite-test-analytics
+cmd: /usr/bin/python3 setup.py sdist --formats=zip --dist-dir .tox/dist
+running sdist
+running egg_info
+writing src/buildkite_test_analytics.egg-info/PKG-INFO
+writing dependency_links to src/buildkite_test_analytics.egg-info/dependency_links.txt
+writing requirements to src/buildkite_test_analytics.egg-info/requires.txt
+writing top-level names to src/buildkite_test_analytics.egg-info/top_level.txt
+file src/bkta_api.py (for module bkta_api) not found
+reading manifest file 'src/buildkite_test_analytics.egg-info/SOURCES.txt'
+adding license file 'LICENSE.txt'
+writing manifest file 'src/buildkite_test_analytics.egg-info/SOURCES.txt'
+running check
+creating buildkite-test-analytics-0.0.1
+creating buildkite-test-analytics-0.0.1/src
+creating buildkite-test-analytics-0.0.1/src/buildkite_test_analytics.egg-info
+copying files to buildkite-test-analytics-0.0.1...
+copying LICENSE.txt -> buildkite-test-analytics-0.0.1
+copying README.md -> buildkite-test-analytics-0.0.1
+copying setup.py -> buildkite-test-analytics-0.0.1
+copying src/buildkite_test_analytics.egg-info/PKG-INFO -> buildkite-test-analytics-0.0.1/src/buildkite_test_analytics.egg-info
+copying src/buildkite_test_analytics.egg-info/SOURCES.txt -> buildkite-test-analytics-0.0.1/src/buildkite_test_analytics.egg-info
+copying src/buildkite_test_analytics.egg-info/dependency_links.txt -> buildkite-test-analytics-0.0.1/src/buildkite_test_analytics.egg-info
+copying src/buildkite_test_analytics.egg-info/not-zip-safe -> buildkite-test-analytics-0.0.1/src/buildkite_test_analytics.egg-info
+copying src/buildkite_test_analytics.egg-info/requires.txt -> buildkite-test-analytics-0.0.1/src/buildkite_test_analytics.egg-info
+copying src/buildkite_test_analytics.egg-info/top_level.txt -> buildkite-test-analytics-0.0.1/src/buildkite_test_analytics.egg-info
+Writing buildkite-test-analytics-0.0.1/setup.cfg
+creating '.tox/dist/buildkite-test-analytics-0.0.1.zip' and adding 'buildkite-test-analytics-0.0.1' to it
+adding 'buildkite-test-analytics-0.0.1'
+adding 'buildkite-test-analytics-0.0.1/src'
+adding 'buildkite-test-analytics-0.0.1/PKG-INFO'
+adding 'buildkite-test-analytics-0.0.1/setup.cfg'
+adding 'buildkite-test-analytics-0.0.1/README.md'
+adding 'buildkite-test-analytics-0.0.1/LICENSE.txt'
+adding 'buildkite-test-analytics-0.0.1/setup.py'
+adding 'buildkite-test-analytics-0.0.1/src/buildkite_test_analytics.egg-info'
+adding 'buildkite-test-analytics-0.0.1/src/buildkite_test_analytics.egg-info/not-zip-safe'
+adding 'buildkite-test-analytics-0.0.1/src/buildkite_test_analytics.egg-info/PKG-INFO'
+adding 'buildkite-test-analytics-0.0.1/src/buildkite_test_analytics.egg-info/SOURCES.txt'
+adding 'buildkite-test-analytics-0.0.1/src/buildkite_test_analytics.egg-info/dependency_links.txt'
+adding 'buildkite-test-analytics-0.0.1/src/buildkite_test_analytics.egg-info/top_level.txt'
+adding 'buildkite-test-analytics-0.0.1/src/buildkite_test_analytics.egg-info/requires.txt'
+removing 'buildkite-test-analytics-0.0.1' (and everything under it)
