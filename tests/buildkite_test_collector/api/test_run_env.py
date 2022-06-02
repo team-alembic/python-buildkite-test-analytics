@@ -1,11 +1,10 @@
-from cProfile import run
 from random import randint
 from uuid import uuid4, UUID
 import os
 import pytest
 import mock
 
-from bkta.api.run_env import UnknownEnvironmentError, detect_env
+from buildkite_test_collector.api.run_env import UnknownEnvironmentError, detect_env
 
 
 def test_detect_env_with_no_env_vars_raises_an_error():
@@ -62,15 +61,13 @@ def test_detect_env_with_github_actions_env_vars_returns_the_correct_environment
         runtime_env = detect_env()
 
         assert runtime_env.ci == "github_actions"
-        assert runtime_env.key == "bring-about-world-peace-{}-{}".format(
-            run_number, run_attempt)
-        assert runtime_env.url == "https://github.com/bill-and-ted/phone-booth/actions/runs/{}".format(
-            run_id)
+        assert runtime_env.key == f"bring-about-world-peace-{run_number}-{run_attempt}"
+        assert runtime_env.url == f"https://github.com/bill-and-ted/phone-booth/actions/runs/{run_id}"
         assert runtime_env.branch == "rufus"
         assert runtime_env.commit_sha == commit
         assert runtime_env.number == run_number
-        assert runtime_env.job_id == None
-        assert runtime_env.message == None
+        assert runtime_env.job_id is None
+        assert runtime_env.message is None
 
 
 def test_detect_env_with_circle_ci_env_vars_returns_the_correct_environment():
@@ -90,13 +87,13 @@ def test_detect_env_with_circle_ci_env_vars_returns_the_correct_environment():
         runtime_env = detect_env()
 
         assert runtime_env.ci == "circleci"
-        assert runtime_env.key == "{}-{}".format(workflow_id, build_num)
+        assert runtime_env.key == f"{workflow_id}-{build_num}"
         assert runtime_env.url == "https://example.test/circle"
         assert runtime_env.branch == "rufus"
         assert runtime_env.commit_sha == commit
         assert runtime_env.number == build_num
-        assert runtime_env.job_id == None
-        assert runtime_env.message == None
+        assert runtime_env.job_id is None
+        assert runtime_env.message is None
 
 
 def test_detect_env_with_generic_env_vars():
@@ -109,9 +106,9 @@ def test_detect_env_with_generic_env_vars():
 
         assert runtime_env.ci == "generic"
         assert UUID(runtime_env.key)
-        assert runtime_env.url == None
-        assert runtime_env.branch == None
-        assert runtime_env.commit_sha == None
-        assert runtime_env.number == None
-        assert runtime_env.job_id == None
-        assert runtime_env.message == None
+        assert runtime_env.url is None
+        assert runtime_env.branch is None
+        assert runtime_env.commit_sha is None
+        assert runtime_env.number is None
+        assert runtime_env.job_id is None
+        assert runtime_env.message is None

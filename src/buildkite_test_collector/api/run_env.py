@@ -16,7 +16,7 @@ def __get_env(name: str) -> Optional[str]:
 def __buildkite_env() -> Optional['RuntimeEnvironment']:
     build_id = __get_env("BUILDKITE_BUILD_ID")
 
-    if (build_id is None):
+    if build_id is None:
         return None
 
     return RuntimeEnvironment(
@@ -39,11 +39,13 @@ def __github_actions_env() -> Optional['RuntimeEnvironment']:
     if (action is None or run_number is None or run_attempt is None):
         return None
 
+    repo = __get_env("GITHUB_REPOSITORY")
+    run_id = __get_env("GITHUB_RUN_ID")
+
     return RuntimeEnvironment(
         ci="github_actions",
-        key="{}-{}-{}".format(action, run_number, run_attempt),
-        url="https://github.com/{}/actions/runs/{}".format(
-            __get_env("GITHUB_REPOSITORY"), __get_env("GITHUB_RUN_ID")),
+        key=f"{action}-{run_number}-{run_attempt}",
+        url=f"https://github.com/{repo}/actions/runs/{run_id}",
         branch=__get_env("GITHUB_REF"),
         commit_sha=__get_env("GITHUB_SHA"),
         number=run_number,
@@ -61,7 +63,7 @@ def __circle_ci_env() -> Optional['RuntimeEnvironment']:
 
     return RuntimeEnvironment(
         ci="circleci",
-        key="{}-{}".format(workflow_id, build_num),
+        key=f"{workflow_id}-{build_num}",
         url=__get_env("CIRCLE_BUILD_URL"),
         branch=__get_env("CIRCLE_BRANCH"),
         commit_sha=__get_env("CIRCLE_SHA1"),
@@ -103,8 +105,8 @@ class RuntimeEnvironment:
     url: Optional[str]
 
     def as_json(self) -> Dict[str, str]:
-        {
-            "ci": self.ci,
+        attrs = {
+            "CI": self.ci,
             "key": self.key,
             "number": self.number,
             "job_id": self.job_id,
@@ -113,6 +115,8 @@ class RuntimeEnvironment:
             "message": self.message,
             "url": self.url
         }
+
+        return {k: v for k, v in attrs.items() if v is not None}
 
 
 def detect_env() -> 'RuntimeEnvironment':

@@ -4,8 +4,6 @@ from datetime import datetime, timedelta
 
 from .run_env import RuntimeEnvironment, detect_env
 
-import json
-
 JsonValue = Union[str, int, float, bool, 'JsonDict', List['JsonValue']]
 JsonDict = Dict[str, JsonValue]
 
@@ -34,22 +32,22 @@ class TestHistory:
     children: List['TestHistory']
 
     def is_finished(self) -> bool:
-        self.end_at != None
+        return self.end_at is not None
 
-    def as_json(self) -> JsonDict:
+    def as_json(self, started_at: datetime) -> JsonDict:
         attrs = {
             "section": self.section,
-            "children": self.children.map(lambda child: child.as_json())
+            "children": list(map(lambda child: child.as_json(), self.children))
         }
 
-        if (self.start_at is not None):
-            attrs["start_at"] = self.start_at.microsecond() / 1_000_000.0
+        if self.start_at is not None:
+            attrs["start_at"] = (self.start_at - started_at).total_seconds()
 
-        if (self.end_at is not None):
-            attrs["end_at"] = self.end_at.microsecond() / 1_000_000.0
+        if self.end_at is not None:
+            attrs["end_at"] = (self.end_at - started_at).total_seconds()
 
-        if (self.duration is not None):
-            attrs["duration"] = self.duration.microsecond() / 1_000_000.0
+        if self.duration is not None:
+            attrs["duration"] = self.duration.total_seconds()
 
         return attrs
 
@@ -64,21 +62,21 @@ class TestData:
     history: TestHistory
 
     def is_finished(self) -> bool:
-        self.history.is_finished()
+        return self.history and self.history.is_finished()
 
-    def as_json(self) -> JsonDict:
+    def as_json(self, started_at: datetime) -> JsonDict:
         attrs = {
             "id": self.id,
             "scope": self.scope,
             "name": self.name,
             "identifier": self.identifier,
-            "history": self.history.to_json()
+            "history": self.history.as_json(started_at)
         }
 
-        if (self.result is TestResultPassed):
+        if self.result is TestResultPassed:
             attrs["result"] = "passed"
 
-        if (self.result is TestResultFailed):
+        if self.result is TestResultFailed:
             attrs["result"] = "failed"
             if (self.result.failure_reason is not None):
                 attrs["failure_reason"] = self.result.failure_reason
@@ -94,8 +92,8 @@ class Payload:
     finished_at: Optional[datetime]
 
     @classmethod
-    def init(_cls) -> 'Payload':
-        return Payload(
+    def init(cls) -> 'Payload':
+        return cls(
             run_env=detect_env(),
             data=[],
             started_at=datetime.now(),
@@ -104,13 +102,20 @@ class Payload:
 
     def as_json(self) -> JsonDict:
         finished_data = filter(
-            self.data, lambda test_data: test_data.is_finished())
+            lambda td: td.is_finished(),
+            self.data
+        )
 
-        attrs = {
+        return {
             "format": "json",
             "run_env": self.run_env.as_json(),
-            "data": list(finished_data),
+            "data": list(map(lambda td: td.as_json(self.started_at), finished_data)),
         }
 
-    def to_json(self) -> str:
-        return json.dumps(self.as_json())
+    def push_test_data(self, report: TestData) -> 'Payload':
+        return self.__class__(
+            run_env=self.run_env,
+            started_at=self.started_at,
+            finished_at=self.finished_at,
+            data=self.data + [report]
+        )
