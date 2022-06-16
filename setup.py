@@ -26,6 +26,7 @@ setup(name='buildkite-test-collector',
               "check-manifest",
               "twine",
               "responses",
+              "pylint"
           ]
       },
       entry_points={
