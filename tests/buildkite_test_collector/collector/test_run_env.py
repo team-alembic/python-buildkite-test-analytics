@@ -1,16 +1,14 @@
 from random import randint
 from uuid import uuid4, UUID
 import os
-import pytest
 import mock
 
-from buildkite_test_collector.api.run_env import UnknownEnvironmentError, detect_env
+from buildkite_test_collector.collector.run_env import RuntimeEnvironment, detect_env
 
 
-def test_detect_env_with_no_env_vars_raises_an_error():
-    with mock.patch.dict(os.environ, {}):
-        with pytest.raises(UnknownEnvironmentError):
-            detect_env()
+def test_detect_env_with_no_env_returns_none():
+    with mock.patch.dict(os.environ, {}, clear=True):
+        assert detect_env() is None
 
 
 def test_detect_env_with_buildkite_api_env_vars_returns_the_correct_environment():
@@ -28,7 +26,7 @@ def test_detect_env_with_buildkite_api_env_vars_returns_the_correct_environment(
         "BUILDKITE_JOB_ID": job_id,
         "BUILDKITE_MESSAGE": "All we are is dust in the wind, dude.",
     }
-    with mock.patch.dict(os.environ, env):
+    with mock.patch.dict(os.environ, env, clear=True):
         runtime_env = detect_env()
 
         assert runtime_env.ci == "buildkite"
@@ -57,7 +55,7 @@ def test_detect_env_with_github_actions_env_vars_returns_the_correct_environment
         "GITHUB_SHA": commit,
     }
 
-    with mock.patch.dict(os.environ, env):
+    with mock.patch.dict(os.environ, env, clear=True):
         runtime_env = detect_env()
 
         assert runtime_env.ci == "github_actions"
@@ -83,7 +81,7 @@ def test_detect_env_with_circle_ci_env_vars_returns_the_correct_environment():
         "CIRCLE_SHA1": commit
     }
 
-    with mock.patch.dict(os.environ, env):
+    with mock.patch.dict(os.environ, env, clear=True):
         runtime_env = detect_env()
 
         assert runtime_env.ci == "circleci"
@@ -101,7 +99,7 @@ def test_detect_env_with_generic_env_vars():
         "CI": "true"
     }
 
-    with mock.patch.dict(os.environ, env):
+    with mock.patch.dict(os.environ, env, clear=True):
         runtime_env = detect_env()
 
         assert runtime_env.ci == "generic"
@@ -112,3 +110,16 @@ def test_detect_env_with_generic_env_vars():
         assert runtime_env.number is None
         assert runtime_env.job_id is None
         assert runtime_env.message is None
+
+
+def test_env_as_json(fake_env):
+    json = fake_env.as_json()
+
+    assert json["CI"] == fake_env.ci
+    assert json["key"] == fake_env.key
+    assert json["number"] == fake_env.number
+    assert json["job_id"] == fake_env.job_id
+    assert json["branch"] == fake_env.branch
+    assert json["commit_sha"] == fake_env.commit_sha
+    assert json["message"] == fake_env.message
+    assert json["url"] == fake_env.url

@@ -14,17 +14,20 @@ setup(name='buildkite-test-collector',
       license='MIT',
       classifiers=[
           "License :: OSI Approved :: MIT",
+          "Framework :: Pytest"
       ],
       py_modules=['buildkite_test_collector'],
       zip_safe=False,
       package_dir={'': 'src'},
-      install_requires=["requests>=2"],
+      install_requires=["requests>=2", "pytest>=7"],
       extras_require={
           "dev": [
-              "pytest>=7",
               "mock>=4",
               "check-manifest",
               "twine",
               "responses",
           ]
+      },
+      entry_points={
+          "pytest11": ["buildkite_test_collector = buildkite_test_collector.pytest_plugin"]
       })

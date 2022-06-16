@@ -1,8 +1,12 @@
+"""Runtime environment detection"""
+
 from dataclasses import dataclass
 from typing import Dict, Optional
 from uuid import uuid4
 
 import os
+
+# pylint: disable=C0103 disable=R0902
 
 
 def __get_env(name: str) -> Optional[str]:
@@ -74,7 +78,7 @@ def __circle_ci_env() -> Optional['RuntimeEnvironment']:
 
 
 def __generic_env() -> Optional['RuntimeEnvironment']:
-    if (__get_env("CI") is None):
+    if __get_env("CI") is None:
         return None
 
     return RuntimeEnvironment(
@@ -89,12 +93,9 @@ def __generic_env() -> Optional['RuntimeEnvironment']:
     )
 
 
-class UnknownEnvironmentError(Exception):
-    pass
-
-
 @dataclass(frozen=True)
 class RuntimeEnvironment:
+    """The detected RuntimeEnvironment"""
     ci: str
     key: str
     number: Optional[str]
@@ -105,6 +106,7 @@ class RuntimeEnvironment:
     url: Optional[str]
 
     def as_json(self) -> Dict[str, str]:
+        """Convert this trace into a Dict for eventual serialisation into JSON"""
         attrs = {
             "CI": self.ci,
             "key": self.key,
@@ -119,14 +121,9 @@ class RuntimeEnvironment:
         return {k: v for k, v in attrs.items() if v is not None}
 
 
-def detect_env() -> 'RuntimeEnvironment':
-    env = __buildkite_env() or \
+def detect_env() -> Optional['RuntimeEnvironment']:
+    """Attempt to detect the CI system we're running in"""
+    return __buildkite_env() or \
         __github_actions_env() or \
         __circle_ci_env() or \
         __generic_env()
-
-    if (env is None):
-        raise UnknownEnvironmentError(
-            "Unable to detect runtime CI environment")
-
-    return env
