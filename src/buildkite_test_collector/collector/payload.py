@@ -77,7 +77,8 @@ class TestData:
     identifier: str
     history: TestHistory
     location: Optional[str] = None
-    result: TestResultPassed | TestResultFailed | TestResultSkipped | None = None
+    result: Union[TestResultPassed, TestResultFailed,
+                  TestResultSkipped, None] = None
 
     @classmethod
     def start(cls, id: UUID,

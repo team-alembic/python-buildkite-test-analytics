@@ -8,7 +8,7 @@ from .payload import Payload
 
 def submit(payload: Payload, batch_size=100) -> Optional[Response]:
     """Submit a payload to the API"""
-    token = environ.get("BUILDKITE_ANALYTICS_API_TOKEN")
+    token = environ.get("BUILDKITE_ANALYTICS_TOKEN")
     response = None
 
     if token:
